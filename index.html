@@ -1,29 +1,73 @@
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="rapid7-site-verification" content="your-meta-tag-value">
-    <title>InsightAppSec Demo</title>
-    <title>XSS Vulnerability Example</title>
+    <title>Web Vulnerabilities Demo</title>
 </head>
 <body>
-    <h1>Rapid7 InsightAppSec Verification</h1>
-    <a href="https://6093-113-172-92-76.ngrok-free.app">Xin chao</a>
-    <h1>Search Page</h1>
-    <form method="GET">
-        <label for="search">Search:</label>
-        <input type="text" id="search" name="query" />
-        <button type="submit">Submit</button>
+    <h1>Demo các lỗ hổng bảo mật web phổ biến</h1>
+
+    <!-- XSS (Cross-Site Scripting) -->
+    <h2>1. Cross-Site Scripting (XSS)</h2>
+    <form method="GET" action="">
+        <label for="xss-input">Nhập dữ liệu của bạn:</label>
+        <input type="text" id="xss-input" name="xss" placeholder="Nhập tên của bạn">
+        <button type="submit">Gửi</button>
     </form>
-    <hr>
+    <p>Kết quả: </p>
     <div>
-        <p>You searched for: <strong>
-            <!-- Lỗ hổng XSS: đầu vào của người dùng không được mã hóa -->
-            <?php echo $_GET['query']; ?>
-        </strong></p>
+        <!-- Phản hồi dữ liệu người dùng mà không qua kiểm tra -->
+        <strong>
+            <?php 
+            if (isset($_GET['xss'])) { 
+                echo $_GET['xss']; 
+            } 
+            ?>
+        </strong>
     </div>
+
+    <!-- SQL Injection -->
+    <h2>2. SQL Injection</h2>
+    <form method="POST" action="">
+        <label for="username">Tên đăng nhập:</label>
+        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập">
+        <label for="password">Mật khẩu:</label>
+        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu">
+        <button type="submit">Đăng nhập</button>
+    </form>
+    <p>Kết quả:</p>
+    <div>
+        <?php 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            
+            // Câu truy vấn SQL không an toàn
+            echo "<p>Đang thực hiện truy vấn:</p>";
+            echo "<code>SELECT * FROM users WHERE username = '$username' AND password = '$password';</code>";
+        }
+        ?>
+    </div>
+
+    <!-- File Inclusion -->
+    <h2>3. File Inclusion</h2>
+    <p>Chọn file để xem nội dung:</p>
+    <ul>
+        <li><a href="?page=home">Trang chủ</a></li>
+        <li><a href="?page=about">Giới thiệu</a></li>
+    </ul>
+    <div>
+        <?php
+        if (isset($_GET['page'])) {
+            // Bao gồm file mà không kiểm tra dữ liệu đầu vào
+            include($_GET['page'] . ".php");
+        }
+        ?>
+    </div>
+
+    <footer>
+        <p>Đây chỉ là demo lỗ hổng bảo mật, không nên sử dụng trong thực tế!</p>
+    </footer>
 </body>
 </html>
-
