@@ -7,18 +7,17 @@
     <title>Web Vulnerabilities Demo</title>
 </head>
 <body>
-    <h1>Demo các lỗ hổng bảo mật web phổ biến</h1>
+    <h1>Demo Tổng Hợp Các Lỗ Hổng Web Phổ Biến</h1>
 
-    <!-- XSS (Cross-Site Scripting) -->
+    <!-- 1. Cross-Site Scripting (XSS) -->
     <h2>1. Cross-Site Scripting (XSS)</h2>
     <form method="GET" action="">
-        <label for="xss-input">Nhập dữ liệu của bạn:</label>
-        <input type="text" id="xss-input" name="xss" placeholder="Nhập tên của bạn">
+        <label for="xss-input">Nhập tên của bạn:</label>
+        <input type="text" id="xss-input" name="xss">
         <button type="submit">Gửi</button>
     </form>
-    <p>Kết quả: </p>
+    <p>Kết quả:</p>
     <div>
-        <!-- Phản hồi dữ liệu người dùng mà không qua kiểm tra -->
         <strong>
             <?php 
             if (isset($_GET['xss'])) { 
@@ -28,7 +27,7 @@
         </strong>
     </div>
 
-    <!-- SQL Injection -->
+    <!-- 2. SQL Injection -->
     <h2>2. SQL Injection</h2>
     <form method="POST" action="">
         <label for="username">Tên đăng nhập:</label>
@@ -43,15 +42,14 @@
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
-            
-            // Câu truy vấn SQL không an toàn
-            echo "<p>Đang thực hiện truy vấn:</p>";
+            // SQL query không an toàn
+            echo "<p>Truy vấn SQL:</p>";
             echo "<code>SELECT * FROM users WHERE username = '$username' AND password = '$password';</code>";
         }
         ?>
     </div>
 
-    <!-- File Inclusion -->
+    <!-- 3. File Inclusion -->
     <h2>3. File Inclusion</h2>
     <p>Chọn file để xem nội dung:</p>
     <ul>
@@ -61,14 +59,63 @@
     <div>
         <?php
         if (isset($_GET['page'])) {
-            // Bao gồm file mà không kiểm tra dữ liệu đầu vào
+            // File Inclusion không kiểm tra đầu vào
             include($_GET['page'] . ".php");
         }
         ?>
     </div>
 
+    <!-- 4. Command Injection -->
+    <h2>4. Command Injection</h2>
+    <form method="GET" action="">
+        <label for="command">Nhập lệnh hệ thống:</label>
+        <input type="text" id="command" name="command" placeholder="Nhập lệnh">
+        <button type="submit">Thực thi</button>
+    </form>
+    <p>Kết quả:</p>
+    <div>
+        <?php 
+        if (isset($_GET['command'])) {
+            $command = $_GET['command'];
+            // Thực thi lệnh hệ thống không an toàn
+            echo "<pre>";
+            echo shell_exec($command);
+            echo "</pre>";
+        }
+        ?>
+    </div>
+
+    <!-- 5. Cross-Site Request Forgery (CSRF) -->
+    <h2>5. Cross-Site Request Forgery (CSRF)</h2>
+    <form method="POST" action="update_profile.php">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Nhập email">
+        <button type="submit">Cập nhật</button>
+    </form>
+    <p>Lưu ý: Nếu người dùng không kiểm tra token CSRF, kẻ tấn công có thể giả mạo yêu cầu.</p>
+
+    <!-- 6. Directory Traversal -->
+    <h2>6. Directory Traversal</h2>
+    <p>Nhập đường dẫn file bạn muốn truy cập:</p>
+    <form method="GET" action="">
+        <input type="text" name="file" placeholder="Nhập đường dẫn file">
+        <button type="submit">Mở file</button>
+    </form>
+    <div>
+        <?php 
+        if (isset($_GET['file'])) {
+            $file = $_GET['file'];
+            // Không kiểm tra đầu vào, dễ bị tấn công Directory Traversal
+            echo "<pre>";
+            echo file_get_contents($file);
+            echo "</pre>";
+        }
+        ?>
+    </div>
+
     <footer>
-        <p>Đây chỉ là demo lỗ hổng bảo mật, không nên sử dụng trong thực tế!</p>
+        <p>Đây chỉ là demo lỗ hổng bảo mật. Hãy luôn bảo mật ứng dụng của bạn!</p>
     </footer>
 </body>
 </html>
+
