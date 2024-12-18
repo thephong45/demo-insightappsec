@@ -1,3 +1,4 @@
+</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,11 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="rapid7-site-verification" content="your-meta-tag-value">
     <title>InsightAppSec Demo</title>
+    <title>XSS Vulnerability Example</title>
 </head>
 <body>
     <h1>Rapid7 InsightAppSec Verification</h1>
     <a href="https://6093-113-172-92-76.ngrok-free.app">Xin chao</a>
+    <h1>Search Page</h1>
+    <form method="GET">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="query" />
+        <button type="submit">Submit</button>
+    </form>
+    <hr>
+    <div>
+        <p>You searched for: <strong>
+            <!-- Lỗ hổng XSS: đầu vào của người dùng không được mã hóa -->
+            <?php echo $_GET['query']; ?>
+        </strong></p>
+    </div>
 </body>
 </html>
-
 
