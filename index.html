@@ -4,118 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="insight-app-sec-validation" content="e113292a-43e7-4f2d-9ffd-bddba1938a59">
-    <title>Web Vulnerabilities Demo</title>
+    <title>Web Vulnerabilities Examples</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: darkred; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow: auto; }
+        .section { margin-bottom: 30px; }
+    </style>
 </head>
 <body>
-    <h1>Demo Tổng Hợp Các Lỗ Hổng Web Phổ Biến</h1>
+    <h1>Common Web Vulnerabilities</h1>
 
-    <!-- 1. Cross-Site Scripting (XSS) -->
-    <h2>1. Cross-Site Scripting (XSS)</h2>
-    <form method="GET" action="">
-        <label for="xss-input">Nhập tên của bạn:</label>
-        <input type="text" id="xss-input" name="xss">
-        <button type="submit">Gửi</button>
-    </form>
-    <p>Kết quả:</p>
-    <div>
-        <strong>
-            <?php 
-            if (isset($_GET['xss'])) { 
-                echo $_GET['xss']; 
-            } 
-            ?>
-        </strong>
+    <!-- XSS (Cross-Site Scripting) Example -->
+    <div class="section">
+        <h2>XSS (Cross-Site Scripting)</h2>
+        <form method="GET" action="">
+            <label for="xss-input">Enter your name:</label>
+            <input type="text" id="xss-input" name="name">
+            <button type="submit">Submit</button>
+        </form>
+        <p>Hello, <b>
+            <!-- Vulnerable to XSS -->
+            <script>document.write(new URLSearchParams(window.location.search).get('name'));</script>
+        </b></p>
     </div>
 
-    <!-- 2. SQL Injection -->
-    <h2>2. SQL Injection</h2>
-    <form method="POST" action="">
-        <label for="username">Tên đăng nhập:</label>
-        <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập">
-        <label for="password">Mật khẩu:</label>
-        <input type="password" id="password" name="password" placeholder="Nhập mật khẩu">
-        <button type="submit">Đăng nhập</button>
-    </form>
-    <p>Kết quả:</p>
-    <div>
-        <?php 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            // SQL query không an toàn
-            echo "<p>Truy vấn SQL:</p>";
-            echo "<code>SELECT * FROM users WHERE username = '$username' AND password = '$password';</code>";
-        }
-        ?>
+    <!-- SQL Injection Example -->
+    <div class="section">
+        <h2>SQL Injection</h2>
+        <form method="POST" action="/login">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username">
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+            <br>
+            <button type="submit">Login</button>
+        </form>
+        <p>Example Input: <code>' OR '1'='1</code></p>
     </div>
 
-    <!-- 3. File Inclusion -->
-    <h2>3. File Inclusion</h2>
-    <p>Chọn file để xem nội dung:</p>
-    <ul>
-        <li><a href="?page=home">Trang chủ</a></li>
-        <li><a href="?page=about">Giới thiệu</a></li>
-    </ul>
-    <div>
-        <?php
-        if (isset($_GET['page'])) {
-            // File Inclusion không kiểm tra đầu vào
-            include($_GET['page'] . ".php");
-        }
-        ?>
+    <!-- CSRF (Cross-Site Request Forgery) Example -->
+    <div class="section">
+        <h2>CSRF (Cross-Site Request Forgery)</h2>
+        <p>Imagine a malicious website tricking you into submitting this form:</p>
+        <form method="POST" action="/transfer">
+            <input type="hidden" name="account" value="victim_account">
+            <input type="hidden" name="amount" value="1000">
+            <button type="submit">Click to transfer $1000</button>
+        </form>
     </div>
 
-    <!-- 4. Command Injection -->
-    <h2>4. Command Injection</h2>
-    <form method="GET" action="">
-        <label for="command">Nhập lệnh hệ thống:</label>
-        <input type="text" id="command" name="command" placeholder="Nhập lệnh">
-        <button type="submit">Thực thi</button>
-    </form>
-    <p>Kết quả:</p>
-    <div>
-        <?php 
-        if (isset($_GET['command'])) {
-            $command = $_GET['command'];
-            // Thực thi lệnh hệ thống không an toàn
-            echo "<pre>";
-            echo shell_exec($command);
-            echo "</pre>";
-        }
-        ?>
+    <!-- File Upload Vulnerability Example -->
+    <div class="section">
+        <h2>File Upload Vulnerability</h2>
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <label for="file">Upload your file:</label>
+            <input type="file" id="file" name="file">
+            <button type="submit">Upload</button>
+        </form>
+        <p>Note: A malicious user could upload a script file like <code>shell.php</code>.</p>
     </div>
-
-    <!-- 5. Cross-Site Request Forgery (CSRF) -->
-    <h2>5. Cross-Site Request Forgery (CSRF)</h2>
-    <form method="POST" action="update_profile.php">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" placeholder="Nhập email">
-        <button type="submit">Cập nhật</button>
-    </form>
-    <p>Lưu ý: Nếu người dùng không kiểm tra token CSRF, kẻ tấn công có thể giả mạo yêu cầu.</p>
-
-    <!-- 6. Directory Traversal -->
-    <h2>6. Directory Traversal</h2>
-    <p>Nhập đường dẫn file bạn muốn truy cập:</p>
-    <form method="GET" action="">
-        <input type="text" name="file" placeholder="Nhập đường dẫn file">
-        <button type="submit">Mở file</button>
-    </form>
-    <div>
-        <?php 
-        if (isset($_GET['file'])) {
-            $file = $_GET['file'];
-            // Không kiểm tra đầu vào, dễ bị tấn công Directory Traversal
-            echo "<pre>";
-            echo file_get_contents($file);
-            echo "</pre>";
-        }
-        ?>
-    </div>
-
-    <footer>
-        <p>Đây chỉ là demo lỗ hổng bảo mật. Hãy luôn bảo mật ứng dụng của bạn!</p>
-    </footer>
 </body>
 </html>
+
+
 
